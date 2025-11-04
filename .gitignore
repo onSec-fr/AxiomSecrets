@@ -3,3 +3,7 @@ AxiomSecrets.exe
 .o/*
 *.swp
 *.bak
+tools
+tools/*
+sys-includes
+sys-includes/*

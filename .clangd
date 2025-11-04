@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - "-fdeclspec"
+    - "-I./includes"
+    - "-I./../includes"
+    - "-I./../../includes"
+    - "-I./../../../includes"
+    - "-I./sys-includes"
+    - "-I./../sys-includes"
+    - "-I./../../sys-includes"
+    - "-I./../../../sys-includes"
+
