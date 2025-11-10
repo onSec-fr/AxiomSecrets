@@ -863,43 +863,32 @@ BOOL CNTFSVolume::OpenVolume(_TCHAR volume)
 				// Log important volume parameters
 
 				SectorSize = bpb.BytesPerSector;
-				printf("Sector Size = %u bytes\n", SectorSize);
-
 				ClusterSize = SectorSize * bpb.SectorsPerCluster;
-				printf("Cluster Size = %lu bytes\n", ClusterSize);
 
 				int sz = (char)bpb.ClustersPerFileRecord;
 				if (sz > 0)
 					FileRecordSize = ClusterSize * sz;
 				else
 					FileRecordSize = 1 << (-sz);
-				printf("FileRecord Size = %lu bytes\n", FileRecordSize);
 
 				sz = (char)bpb.ClustersPerIndexBlock;
 				if (sz > 0)
 					IndexBlockSize = ClusterSize * sz;
 				else
 					IndexBlockSize = 1 << (-sz);
-				printf("IndexBlock Size = %lu bytes\n", IndexBlockSize);
 
 				MFTAddr = bpb.LCN_MFT * ClusterSize;
-				printf("MFT address = 0x%016llx\n", MFTAddr);
 			}
-			else
-			{
-				printf("Volume file system is not NTFS\n");
+			else {
 				goto IOError;
 			}
 		}
-		else
-		{
-			NTFS_TRACE("Read boot sector error\n");
+		else {
 			goto IOError;
 		}
 	}
 	else
 	{
-		printf("Cannnot open volume %c\n", (char)volume);
 	IOError:
 		if (hVolume != INVALID_HANDLE_VALUE)
 		{

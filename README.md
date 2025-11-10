@@ -17,7 +17,10 @@ Gone be the ShadowCopies and other over-the-network secretsdump, read any protec
 | WithSecure            |  ⚠️ - Untested |
 | Cortex XDR            |  ❌ - Flagged  |
 | Sentinel ONE          |  ✅ - OK       |
-| Crowdstrike Falcon    |  ❌ - Flagged  |
+| Crowdstrike Falcon    |  ✅ - OK       |
+
+## TODO
+- Sometimes file backup crashes on misaligned clusters, leaving incomplete files. If you are lucky file might still be usable but that's still a bugger. My theory is that we need special handling in case the file is physically split in different locations on the drive and we need to rebuild it.
 
 ## Building the .exe file
 Install build dependencies:
@@ -75,5 +78,4 @@ Suggestions welcome as well.
 
 This software is under GNU GPL 3.0 license (see LICENSE file).
 This is a free, copyleft license that allows users to run, study, share, and modify software, provided that all distributed versions and derivatives remain open source under the same license.
-
 

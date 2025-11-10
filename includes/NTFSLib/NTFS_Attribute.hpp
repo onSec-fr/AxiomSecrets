@@ -325,9 +325,8 @@ BOOL CAttrNonResident::PickData(const BYTE** dataRun, LONGLONG* length, LONGLONG
 // Travers DataRun and insert into a link list
 BOOL CAttrNonResident::ParseDataRun()
 {
-	NTFS_TRACE("Parsing Non Resident DataRun\n");
-	NTFS_TRACE2("Start VCN = %I64u, End VCN = %I64u\n",
-		AttrHeaderNR->StartVCN, AttrHeaderNR->LastVCN);
+	printf("Parsing Non Resident DataRun\n");
+	printf("Start VCN = %I64llu, End VCN = %I64llu\n", AttrHeaderNR->StartVCN, AttrHeaderNR->LastVCN);
 
 	const BYTE* dataRun = (BYTE*)AttrHeaderNR + AttrHeaderNR->DataRunOffset;
 	LONGLONG length;
@@ -346,8 +345,8 @@ BOOL CAttrNonResident::ParseDataRun()
 				return FALSE;
 			}
 
-			NTFS_TRACE2("Data length = %I64d clusters, LCN = %I64d", length, LCN);
-			NTFS_TRACE(LCNOffset == 0 ? ", Sparse Data\n" : "\n");
+			printf("Data length = %I64lld clusters, LCN = %I64lld", length, LCN);
+			printf(LCNOffset == 0 ? ", Sparse Data\n" : "\n");
 
 			// Store LCN, Data size (clusters) into list
 			DataRun_Entry* dr = new DataRun_Entry;
@@ -384,7 +383,7 @@ BOOL CAttrNonResident::ReadClusters(void* buf, DWORD clusters, LONGLONG lcn)
 {
 	if (lcn == -1)	// sparse data
 	{
-		NTFS_TRACE("Sparse Data, Fill the buffer with 0\n");
+		printf("Sparse Data, Fill the buffer with 0\n");
 
 		// Fill the buffer with 0
 		memset(buf, 0, clusters * _ClusterSize);
@@ -400,19 +399,19 @@ BOOL CAttrNonResident::ReadClusters(void* buf, DWORD clusters, LONGLONG lcn)
 
 	if (len == (DWORD)-1 && GetLastError() != NO_ERROR)
 	{
-		NTFS_TRACE1("Cannot locate cluster with LCN %I64d\n", lcn);
+		printf("Cannot locate cluster with LCN %I64lld\n", lcn);
 	}
 	else
 	{
 		if (ReadFile(_hVolume, buf, clusters * _ClusterSize, &len, NULL) &&
 			len == clusters * _ClusterSize)
 		{
-			NTFS_TRACE2("Successfully read %u clusters from LCN %I64d\n", clusters, lcn);
+			//printf("Successfully read %u clusters from LCN %I64d\n", clusters, lcn);
 			return TRUE;
 		}
 		else
 		{
-			NTFS_TRACE1("Cannot read cluster with LCN %I64d\n", lcn);
+			printf("Cannot read cluster with LCN %I64lld\n", lcn);
 		}
 	}
 
@@ -424,8 +423,7 @@ BOOL CAttrNonResident::ReadClusters(void* buf, DWORD clusters, LONGLONG lcn)
 // clusters: Clusters to read
 // bufv, bufLen: Returned data
 // *actural = Number of bytes acturally read
-BOOL CAttrNonResident::ReadVirtualClusters(ULONGLONG vcn, DWORD clusters,
-	void* bufv, DWORD bufLen, DWORD* actural)
+BOOL CAttrNonResident::ReadVirtualClusters(ULONGLONG vcn, DWORD clusters, void* bufv, DWORD bufLen, DWORD* actural)
 {
 	_ASSERT(bufv);
 	_ASSERT(clusters);
@@ -436,14 +434,14 @@ BOOL CAttrNonResident::ReadVirtualClusters(ULONGLONG vcn, DWORD clusters,
 	// Verify if clusters exceeds DataRun bounds
 	if (vcn + clusters > (AttrHeaderNR->LastVCN - AttrHeaderNR->StartVCN + 1))
 	{
-		NTFS_TRACE("Cluster exceeds DataRun bounds\n");
+		printf("Cluster exceeds DataRun bounds: %lld - %lld\n", vcn + clusters, (AttrHeaderNR->LastVCN - AttrHeaderNR->StartVCN + 1));
 		return FALSE;
 	}
 
 	// Verify buffer size
 	if (bufLen < clusters * _ClusterSize)
 	{
-		NTFS_TRACE("Buffer size too small\n");
+		printf("Buffer size too small\n");
 		return FALSE;
 	}
 
@@ -468,8 +466,9 @@ BOOL CAttrNonResident::ReadVirtualClusters(ULONGLONG vcn, DWORD clusters,
 				*actural += clustersToRead;
 				vcn += clustersToRead;
 			}
-			else
+			else {
 				break;
+			}
 
 			if (clusters == 0)
 				break;
@@ -539,8 +538,10 @@ BOOL CAttrNonResident::ReadData(const ULONGLONG& offset, void* bufv, DWORD bufLe
 			*actural += len;
 			startVCN++;
 		}
-		else
+		else {
+			printf("ERR_1\n");
 			return FALSE;
+		}
 	}
 	if (bufLen == 0)
 		return TRUE;
@@ -561,8 +562,10 @@ BOOL CAttrNonResident::ReadData(const ULONGLONG& offset, void* bufv, DWORD bufLe
 			if (bufLen == 0)
 				return TRUE;
 		}
-		else
+		else {
+			printf("ERR_2\n");
 			return FALSE;
+		}
 	}
 
 	// Last cluster, Unaligned
@@ -574,8 +577,10 @@ BOOL CAttrNonResident::ReadData(const ULONGLONG& offset, void* bufv, DWORD bufLe
 
 		return TRUE;
 	}
-	else
+	else {
+		printf("ERR_3\n");
 		return FALSE;
+	}
 }
 
 
@@ -1472,7 +1477,7 @@ private:
 	LONGLONG CurrentCluster;
 
 public:
-	BOOL IsClusterFree(ULONGLONG& cluster) const;
+	BOOL IsClusterFree(ULONGLONG& cluster);
 };	// CAttr_Bitmap
 
 template <class TYPE_RESIDENT>
@@ -1523,7 +1528,7 @@ CAttr_Bitmap<TYPE_RESIDENT>::~CAttr_Bitmap()
 
 // Verify if a single cluster is free
 template <class TYPE_RESIDENT>
-BOOL CAttr_Bitmap<TYPE_RESIDENT>::IsClusterFree(ULONGLONG& cluster) const
+BOOL CAttr_Bitmap<TYPE_RESIDENT>::IsClusterFree(ULONGLONG& cluster)
 {
 	if (!this->IsDataRunOK() || !BitmapBuf)
 		return FALSE;
