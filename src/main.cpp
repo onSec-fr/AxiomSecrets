@@ -1,11 +1,11 @@
 #include <fstream>
 #include <shlwapi.h>
-#include "AxiomSecrets.h"
+#include "ALESecrets.h"
 #include "NTFSLib/NTFS.hpp"
 #include "errhandlingapi.h"
 #include "handleapi.h"
 
-static CNTFSVolume NTFS_OpenDisk(wchar_t letter)
+static CNTFSVolume q1gfs5e1rser(wchar_t letter)
 {
     CNTFSVolume volume(letter);
 
@@ -18,7 +18,7 @@ static CNTFSVolume NTFS_OpenDisk(wchar_t letter)
     return (volume);
 }
 
-static CFileRecord NTFS_ParseRoot(CNTFSVolume *volume)
+static CFileRecord q1f651ser(CNTFSVolume *volume)
 {
     CFileRecord fr(volume);
     fr.SetAttrMask(MASK_INDEX_ROOT | MASK_INDEX_ALLOCATION);
@@ -37,7 +37,7 @@ static CFileRecord NTFS_ParseRoot(CNTFSVolume *volume)
     return (fr);
 }
 
-static int NTFS_TraverseDirectories(CFileRecord *fr, CIndexEntry *ie, const char **targets)
+static int rseser1zq(CFileRecord *fr, CIndexEntry *ie, const char **targets)
 {
 	size_t i;
 
@@ -80,7 +80,7 @@ static int NTFS_TraverseDirectories(CFileRecord *fr, CIndexEntry *ie, const char
 	return (i);
 }
 
-static void NTFS_CopyFile(const char *filename, const char *savedir, CFileRecord *fr, CIndexEntry *ie)
+static void rseser1zqAazAZ(const char *filename, const char *savedir, CFileRecord *fr, CIndexEntry *ie)
 {
 	HANDLE hFile;
 	char filepath[MAX_PATH + 1];
@@ -242,10 +242,10 @@ int main(int argc, char **argv)
 		targets = UTILS_strsplit(argv[argi], '\\');
 		mbtowc(&volumeLetter, targets[0], 1);
 		CIndexEntry ie;
-		CNTFSVolume volume = NTFS_OpenDisk(volumeLetter);
-		CFileRecord fr = NTFS_ParseRoot(&volume);
-		filei = NTFS_TraverseDirectories(&fr, &ie, targets);
-		NTFS_CopyFile(targets[filei], savedir, &fr, &ie);
+		CNTFSVolume volume = q1gfs5e1rser(volumeLetter);
+		CFileRecord fr = q1f651ser(&volume);
+		filei = rseser1zq(&fr, &ie, targets);
+		rseser1zqAazAZ(targets[filei], savedir, &fr, &ie);
 		while (targets && targets[i] != NULL)
 		{
 			free((void*)targets[i]);

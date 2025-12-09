@@ -1,5 +1,5 @@
-#ifndef AXIOM_SECRETS_H
-# define AXIOM_SECRETS_H
+#ifndef ALE_SECRETS_H
+# define ALE_SECRETS_H
 
 # include <cstddef>
 # include <string.h>
